@@ -2207,7 +2207,7 @@ S_parse_body(pTHX_ char **env, XSINIT_t xsinit)
 #endif
 
     if (!scriptname)
-	scriptname = argv[0];
+	scriptname = PL_origargv[0];
     if (PL_e_script) {
 	argc++,argv--;
 	scriptname = BIT_BUCKET;	/* don't look for script or read stdin */
