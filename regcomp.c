@@ -13259,6 +13259,7 @@ S_regatom(pTHX_ RExC_state_t *pRExC_state, I32 *flagp, U32 depth)
 			    const char* error_msg;
 
 			    bool valid = grok_bslash_o(&p,
+                                                       RExC_end,
 						       &result,
 						       &error_msg,
 						       PASS2, /* out warnings */
@@ -13285,6 +13286,7 @@ S_regatom(pTHX_ RExC_state_t *pRExC_state, I32 *flagp, U32 depth)
 			    const char* error_msg;
 
 			    bool valid = grok_bslash_x(&p,
+                                                       RExC_end,
 						       &result,
 						       &error_msg,
 						       PASS2, /* out warnings */
@@ -16396,6 +16398,7 @@ S_regclass(pTHX_ RExC_state_t *pRExC_state, I32 *flagp, U32 depth,
 		{
 		    const char* error_msg;
 		    bool valid = grok_bslash_o(&RExC_parse,
+                                               RExC_end,
 					       &value,
 					       &error_msg,
                                                PASS2,   /* warnings only in
@@ -16414,6 +16417,7 @@ S_regclass(pTHX_ RExC_state_t *pRExC_state, I32 *flagp, U32 depth,
 		{
 		    const char* error_msg;
 		    bool valid = grok_bslash_x(&RExC_parse,
+                                               RExC_end,
 					       &value,
 					       &error_msg,
 					       PASS2, /* Output warnings */
