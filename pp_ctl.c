@@ -742,17 +742,16 @@ PP(pp_formline)
 
                 while ((s = (char *) memchr(s, '\n', send - s)) != NULL) {
                     s++;
-
-			if (oneline) {
-			    to_copy = s - item - 1;
-			    chophere = s;
-			    break;
-			} else {
-			    if (s == send) {
-				to_copy--;
-			    } else
-				lines++;
-			}
+                    if (oneline) {
+                        to_copy = s - item - 1;
+                        chophere = s;
+                        break;
+                    } else {
+                        if (s == send) {
+                            to_copy--;
+                        } else
+                            lines++;
+                    }
 		}
 	    }
 
