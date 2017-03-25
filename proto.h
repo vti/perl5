@@ -4287,6 +4287,13 @@ PERL_STATIC_INLINE STRLEN	S_sv_or_pv_pos_u2b(pTHX_ SV *sv, const char *pv, STRLE
 	assert(sv); assert(pv)
 #endif
 #endif
+#if defined(PERL_CORE) || defined(PERL_EXT)
+#ifndef PERL_NO_INLINE_FUNCTIONS
+PERL_STATIC_INLINE void *	S_my_memrchr(const char * s, const char c, const STRLEN len);
+#define PERL_ARGS_ASSERT_MY_MEMRCHR	\
+	assert(s)
+#endif
+#endif
 #if defined(PERL_CR_FILTER)
 #  if defined(PERL_IN_TOKE_C)
 STATIC I32	S_cr_textfilter(pTHX_ int idx, SV *sv, int maxlen);

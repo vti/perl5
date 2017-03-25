@@ -1054,6 +1054,9 @@ pX	|I32	|my_lstat_flags	|NULLOK const U32 flags
 #if !defined(HAS_MEMCMP) || !defined(HAS_SANE_MEMCMP)
 AnpP	|int	|my_memcmp	|NN const void* vs1|NN const void* vs2|size_t len
 #endif
+#if defined(PERL_CORE) || defined(PERL_EXT)
+Exin	|void *	|my_memrchr	|NN const char * s|const char c|const STRLEN len
+#endif
 #if !defined(HAS_MEMSET)
 Anp	|void*	|my_memset	|NN void* vloc|int ch|size_t len
 #endif

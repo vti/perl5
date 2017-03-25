@@ -1070,6 +1070,10 @@ EXTERN_C int usleep(unsigned int);
 #endif
 #endif
 
+#if defined(PERL_CORE) || defined(PERL_EXT)
+#define memrchr(s,c,l) my_memrchr((char *) s,c,l)
+#endif
+
 #ifndef HAS_BCMP
 #   ifndef bcmp
 #	define bcmp(s1,s2,l) memcmp(s1,s2,l)
