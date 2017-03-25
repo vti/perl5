@@ -6386,16 +6386,16 @@ Perl_yylex(pTHX)
                     d = PL_bufend;
                     while ((s = (char *) memchr(s, '\n', PL_bufend - s)) != NULL) {
                         s++;
+                        incline(s, PL_bufend);
+                        if (strSTARTS_WITHs(s,"=cut")) {
+                            s = (char *) memchr(s,'\n', d - s);
+                            if (s)
+                                s++;
+                            else
+                                s = d;
                             incline(s, PL_bufend);
-                            if (strSTARTS_WITHs(s,"=cut")) {
-                                s = (char *) memchr(s,'\n', d - s);
-                                if (s)
-                                    s++;
-                                else
-                                    s = d;
-                                incline(s, PL_bufend);
-                                goto retry;
-                            }
+                            goto retry;
+                        }
                     }
                     s = d;
                     goto retry;
