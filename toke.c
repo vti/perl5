@@ -5550,10 +5550,6 @@ Perl_yylex(pTHX)
                 d++;
             if (d < PL_bufend)
                 d++;
-            else if (d > PL_bufend)
-                /* Found by Ilya: feed random input to Perl. */
-                Perl_croak(aTHX_ "panic: input overflow, %p > %p",
-                           d, PL_bufend);
             s = d;
             if (in_comment && d == PL_bufend
                 && PL_lex_state == LEX_INTERPNORMAL
@@ -5576,9 +5572,6 @@ Perl_yylex(pTHX)
                     if (s < PL_bufend)
                         incline(s);
                 }
-            else if (s > PL_bufend)
-                /* Found by Ilya: feed random input to Perl. */
-                Perl_croak(aTHX_ "panic: input overflow");
 	}
 	goto retry;
     case '-':
