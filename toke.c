@@ -6631,8 +6631,10 @@ Perl_yylex(pTHX)
                         }
 			if (*t++ == ',') {
 			    PL_bufptr = skipspace(PL_bufptr); /* XXX can realloc */
-			    while (t < PL_bufend && *t != ']')
-				t++;
+                            t = (char *) memchr(t, ']', PL_bufend - t);
+			    if (t == NULL) {
+                                t = PL_bufend;
+                            }
 			    Perl_warner(aTHX_ packWARN(WARN_SYNTAX),
 					"Multidimensional syntax %" UTF8f " not supported",
                                         UTF8fARG(UTF,(int)((t - PL_bufptr) + 1), PL_bufptr));
