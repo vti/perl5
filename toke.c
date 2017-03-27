@@ -6384,8 +6384,8 @@ Perl_yylex(pTHX)
                     || PL_lex_state != LEX_NORMAL)
                 {
                     d = PL_bufend;
-                    while (s < d) {
-                        if (*s++ == '\n') {
+                    while ((s = (char *) memchr(s, '\n', PL_bufend - s)) != NULL) {
+                        s++;
                             incline(s, PL_bufend);
                             if (strSTARTS_WITHs(s,"=cut")) {
                                 s = (char *) memchr(s,'\n', d - s);
@@ -6396,8 +6396,8 @@ Perl_yylex(pTHX)
                                 incline(s, PL_bufend);
                                 goto retry;
                             }
-                        }
                     }
+                    s = d;
                     goto retry;
                 }
                 s = PL_bufend;
