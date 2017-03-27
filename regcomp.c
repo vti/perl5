@@ -18343,13 +18343,11 @@ S_skip_to_be_ignored_text(pTHX_ RExC_state_t *pRExC_state,
 	    && *(*p + 1) == '?'
 	    && *(*p + 2) == '#')
 	{
-	    while (*(*p) != ')') {
-		if ((*p) == RExC_end)
-		    FAIL("Sequence (?#... not terminated");
-		(*p)++;
+            *p = (char *) memchr(*p, ')', RExC_end - *p);
+            if (*p == NULL) {
+                FAIL("Sequence (?#... not terminated");
 	    }
-	    (*p)++;
-	    continue;
+            (*p)++;
 	}
 
 	if (use_xmod) {
