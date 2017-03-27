@@ -4536,14 +4536,9 @@ Perl_filter_read(pTHX_ int idx, SV *buf_sv, int maxlen)
 	    /* Want a line */
 	    const char *s = SvEND(datasv);
 	    const char *send = SvPVX(datasv) + SvLEN(datasv);
-	    while (s < send) {
-		if (*s == '\n') {
-		    s++;
-		    break;
-		}
-		s++;
-	    }
-	    if (s == send) return 0; /* eof */
+            s = (char *) memchr(s, '\n', send - s);
+	    if (s == NULL) return 0; /* eof */
+            s++;
 	    sv_catpvn(buf_sv, SvEND(datasv), s-SvEND(datasv));
 	    SvCUR_set(datasv, s-SvPVX(datasv));
 	}
