@@ -4689,9 +4689,8 @@ S_vcs_conflict_marker(pTHX_ char *s)
     lex_token_boundary();
     PL_bufptr = s;
     yyerror("Version control conflict marker");
-    while (s < PL_bufend && *s != '\n')
-	s++;
-    return s;
+    s = (char *) memchr(s, '\n', PL_bufend - s);
+    return (s == NULL) ? PL_bufend : s;
 }
 
 /*
