@@ -4066,10 +4066,9 @@ S_scan_const(pTHX_ char *start)
 
     /* return the substring (via pl_yylval) only if we parsed anything */
     if (s > start) {
-	char *s2 = start;
-	for (; s2 < s; s2++) {
-	    if (*s2 == '\n')
-		COPLINE_INC_WITH_HERELINES;
+	char *s2 = start - 1;
+        while ((s2 = (char *) memchr(s2 + 1, '\n', s - (s2 + 1))) != NULL) {
+            COPLINE_INC_WITH_HERELINES;
 	}
 	SvREFCNT_inc_simple_void_NN(sv);
 	if (   (PL_hints & ( PL_lex_inpat ? HINT_NEW_RE : HINT_NEW_STRING ))
