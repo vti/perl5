@@ -5543,11 +5543,14 @@ Perl_yylex(pTHX)
 		CopLINE_dec(PL_curcop);
 		incline(s, PL_bufend);
 	    }
-            d = s;
-            while (d < PL_bufend && *d != '\n')
+            d = (char *) memchr(s, '\n', PL_bufend - s);
+            if (d == NULL) {
+                d = PL_bufend;
+            }
+            else {
                 d++;
-            if (d < PL_bufend)
-                d++;
+            }
+
             s = d;
             if (in_comment && d == PL_bufend
                 && PL_lex_state == LEX_INTERPNORMAL
