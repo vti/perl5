@@ -10641,11 +10641,12 @@ S_reg(pTHX_ RExC_state_t *pRExC_state, I32 paren, I32 *flagp,U32 depth)
                     goto unterminated_verb_pattern;
                 }
 	        RExC_parse += UTF ? UTF8SKIP(RExC_parse) : 1;
-	        while ( RExC_parse < RExC_end && *RExC_parse != ')' )
-                    RExC_parse += UTF ? UTF8SKIP(RExC_parse) : 1;
-	        if ( RExC_parse >= RExC_end || *RExC_parse != ')' )
+	        RExC_parse = (char *) memchr(RExC_parse, ')', RExC_end - RExC_parse);
+                if (RExC_parse == NULL) {
+                    RExC_parse = RExC_end;
                   unterminated_verb_pattern:
 	            vFAIL("Unterminated verb pattern argument");
+                }
 	        if ( RExC_parse == start_arg )
 	            start_arg = NULL;
 	    } else {
