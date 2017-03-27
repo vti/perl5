@@ -5565,14 +5565,15 @@ Perl_yylex(pTHX)
 	    }
 	}
 	else {
-            while (s < PL_bufend && *s != '\n')
+            s = (char *) memchr(s, '\n', PL_bufend - s);
+            if (s == NULL) {
+                s = PL_bufend;
+            }
+            else {
                 s++;
-            if (s < PL_bufend)
-                {
-                    s++;
-                    if (s < PL_bufend)
-                        incline(s, PL_bufend);
-                }
+                if (s < PL_bufend)
+                    incline(s, PL_bufend);
+            }
 	}
 	goto retry;
     case '-':
