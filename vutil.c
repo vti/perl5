@@ -655,7 +655,7 @@ VER_NV:
         STORE_NUMERIC_LOCAL_SET_STANDARD();
         LOCK_NUMERIC_STANDARD();
 	if (sv) {
-	    Perl_sv_catpvf(aTHX_ sv, "%.9"NVff, SvNVX(ver));
+	    Perl_sv_setpvf(aTHX_ sv, "%.9"NVff, SvNVX(ver));
 	    len = SvCUR(sv);
 	    buf = SvPVX(sv);
 	}
