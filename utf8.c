@@ -1941,33 +1941,66 @@ Perl_utf8_to_bytes(pTHX_ U8 *s, STRLEN *lenp)
     {
         U8 * const save = s;
         U8 * const send = s + *lenp;
-        U8 * d;
 
         /* Nothing before the first variant needs to be changed, so start the real
          * work there */
-        s = first_variant;
-        while (s < send) {
-            if (! UTF8_IS_INVARIANT(*s)) {
-                if (! UTF8_IS_NEXT_CHAR_DOWNGRADEABLE(s, send)) {
-                    *lenp = ((STRLEN) -1);
-                    return 0;
-                }
-                s++;
-            }
-            s++;
-        }
+        U8 * d = s = first_variant;
 
-        /* Is downgradable, so do it */
-        d = s = first_variant;
         while (s < send) {
             U8 c = *s++;
             if (! UVCHR_IS_INVARIANT(c)) {
-                /* Then it is two-byte encoded */
+
+                /* Then it is two-byte encoded.  If its decoded value can't fit
+                 * in a single yte, we have to undo all we've done before, back
+                 * down to the first UTF-8 variant.  Note that every variant
+                 * slides things to the left one byte, and so we have bytest
+                 * that haven't been written over. */
+                if (UNLIKELY (! UTF8_IS_NEXT_CHAR_DOWNGRADEABLE(s - 1, send))) {
+
+                    /* This is actually also the count of the number of
+                     * variants so far.  It would be  s-d, except that s has
+                     * already been incremented */
+                    Size_t bytes_squeezed = s - 1 - d;
+
+                    /* Here, 'd' points to the next position to overwrite to.
+                     * That means its contents haven't been changed yet, nor
+                     * has anything else beyond it in the string.  In restoring
+                     * to the original contents, we don't need to do anything
+                     * past (d-1).  But if *d is a continuation, it means that
+                     * *(d-1) used to be its start byte, and now contains the
+                     * code point these two bytes represent.  In this case, we
+                     * leave d as-is so that we will overwite both bytes, even
+                     * though only the first needs to be.  Doing this extra
+                     * work avoids complicating the code  */
+                    if (! UTF8_IS_CONTINUATION(*d)) {
+                        d--;
+                    }
+
+                    /* And we start the undoing ... XXX */
+                    s = d - bytes_squeezed;
+
+                    while (s >= first_variant) {
+                        if (UVCHR_IS_INVARIANT(*s)) {
+                            *d-- = *s;
+                        }
+                        else {
+                            *d-- = UTF8_EIGHT_BIT_LO(*s);
+                            *d-- = UTF8_EIGHT_BIT_HI(*s);
+                        }
+                        s--;
+                    }
+
+                    *lenp = ((STRLEN) -1);
+                    return 0;
+                }
+
                 c = EIGHT_BIT_UTF8_TO_NATIVE(c, *s);
                 s++;
             }
+
             *d++ = c;
         }
+
         *d = '\0';
         *lenp = d - save;
 
