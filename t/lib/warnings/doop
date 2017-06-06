@@ -5,36 +5,59 @@ $_ = "\x80  \xff" ;
 chop ;
 EXPECT
 ########
-# NAME deprecation of logical bit operations with above ff code points
+# NAME logical & with above ff code points are illegal
 $_ = "\xFF" & "\x{100}";        # Above ff second
+EXPECT
+OPTIONS fatal
+Use of strings with code points over 0xFF as arguments to bitwise and (&) operator is illegal at - line 1.
+########
+# NAME logical & with above ff code points are illegal
 $_ = "\xFF" | "\x{101}";
+EXPECT
+OPTIONS fatal
+Use of strings with code points over 0xFF as arguments to bitwise or (|) operator is illegal at - line 1.
+########
+# NAME logical & with above ff code points are illegal
 $_ = "\xFF" ^ "\x{102}";
+EXPECT
+OPTIONS fatal
+Use of strings with code points over 0xFF as arguments to bitwise xor (^) operator is illegal at - line 1.
+########
+# NAME logical & with above ff code points are illegal
 $_ = "\x{100}" & "\x{FF}";      # Above ff first
+EXPECT
+OPTIONS fatal
+Use of strings with code points over 0xFF as arguments to bitwise and (&) operator is illegal at - line 1.
+########
+# NAME logical & with above ff code points are illegal
 $_ = "\x{101}" | "\x{FF}";
+EXPECT
+OPTIONS fatal
+Use of strings with code points over 0xFF as arguments to bitwise or (|) operator is illegal at - line 1.
+########
+# NAME logical & with above ff code points are illegal
 $_ = "\x{102}" ^ "\x{FF}";
+EXPECT
+OPTIONS fatal
+Use of strings with code points over 0xFF as arguments to bitwise xor (^) operator is illegal at - line 1.
+########
+# NAME logical & with above ff code points are illegal
 $_ = "\x{100}" & "\x{103}";     # both above ff has just one message raised
+EXPECT
+OPTIONS fatal
+Use of strings with code points over 0xFF as arguments to bitwise and (&) operator is illegal at - line 1.
+########
+# NAME logical & with above ff code points are illegal
 $_ = "\x{101}" | "\x{104}";
-$_ = "\x{102}" ^ "\x{105}";
-no warnings 'deprecated';
-$_ = "\xFF" & "\x{100}";
-$_ = "\xFF" | "\x{101}";
-$_ = "\xFF" ^ "\x{101}";
-$_ = "\x{100}" & "\x{FF}";
-$_ = "\x{101}" | "\x{FF}";
-$_ = "\x{102}" ^ "\x{FF}";
-$_ = "\x{100}" & "\x{103}";
-$_ = "\x{101}" | "\x{104}";
+EXPECT
+OPTIONS fatal
+Use of strings with code points over 0xFF as arguments to bitwise or (|) operator is illegal at - line 1.
+########
+# NAME logical & with above ff code points are illegal
 $_ = "\x{102}" ^ "\x{105}";
 EXPECT
-Use of strings with code points over 0xFF as arguments to bitwise and (&) operator is deprecated. This will be a fatal error in Perl 5.28 at - line 1.
-Use of strings with code points over 0xFF as arguments to bitwise or (|) operator is deprecated. This will be a fatal error in Perl 5.28 at - line 2.
-Use of strings with code points over 0xFF as arguments to bitwise xor (^) operator is deprecated. This will be a fatal error in Perl 5.28 at - line 3.
-Use of strings with code points over 0xFF as arguments to bitwise and (&) operator is deprecated. This will be a fatal error in Perl 5.28 at - line 4.
-Use of strings with code points over 0xFF as arguments to bitwise or (|) operator is deprecated. This will be a fatal error in Perl 5.28 at - line 5.
-Use of strings with code points over 0xFF as arguments to bitwise xor (^) operator is deprecated. This will be a fatal error in Perl 5.28 at - line 6.
-Use of strings with code points over 0xFF as arguments to bitwise and (&) operator is deprecated. This will be a fatal error in Perl 5.28 at - line 7.
-Use of strings with code points over 0xFF as arguments to bitwise or (|) operator is deprecated. This will be a fatal error in Perl 5.28 at - line 8.
-Use of strings with code points over 0xFF as arguments to bitwise xor (^) operator is deprecated. This will be a fatal error in Perl 5.28 at - line 9.
+OPTIONS fatal
+Use of strings with code points over 0xFF as arguments to bitwise xor (^) operator is illegal at - line 1.
 ########
 # NAME vec with above ff code points is deprecated
 my $foo = "\x{100}" . "\xff\xfe";
