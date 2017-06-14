@@ -1,5 +1,8 @@
 Revision history for Perl distribution PathTools.
 
+3.68 - Tue Jun 13 04:34:00 EDT 2017
+- Epoc platform no longer supported (RT 130818).
+
 3.67 - Mon Feb 27 09:33:04 EST 2017
 - Add security usage note to File::Spec::no_upwards
 

@@ -3,7 +3,7 @@ use strict;
 use Exporter;
 use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION);
 
-$VERSION = '3.67';
+$VERSION = '3.68';
 my $xs_version = $VERSION;
 $VERSION =~ tr/_//d;
 
@@ -143,15 +143,6 @@ my %METHOD_MAP =
     fastcwd		=> 'cwd',
     abs_path		=> 'fast_abs_path',
     realpath		=> 'fast_abs_path',
-   },
-
-   epoc =>
-   {
-    cwd			=> '_epoc_cwd',
-    getcwd	        => '_epoc_cwd',
-    fastgetcwd		=> '_epoc_cwd',
-    fastcwd		=> '_epoc_cwd',
-    abs_path		=> 'fast_abs_path',
    },
 
    MacOS =>
@@ -674,10 +665,6 @@ sub _qnx_abs_path {
     close REALPATH;
     chomp $realpath;
     return $realpath;
-}
-
-sub _epoc_cwd {
-    return $ENV{'PWD'} = EPOC::getcwd();
 }
 
 

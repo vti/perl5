@@ -3547,7 +3547,6 @@ dist/PathTools/Cwd.xs				Cwd extension external subroutines
 dist/PathTools/lib/File/Spec.pm		portable operations on file names
 dist/PathTools/lib/File/Spec/AmigaOS.pm		portable operations on AmigaOS file names
 dist/PathTools/lib/File/Spec/Cygwin.pm	portable operations on Cygwin file names
-dist/PathTools/lib/File/Spec/Epoc.pm		portable operations on EPOC file names
 dist/PathTools/lib/File/Spec/Functions.pm	Function interface to File::Spec object methods
 dist/PathTools/lib/File/Spec/Mac.pm		portable operations on Mac file names
 dist/PathTools/lib/File/Spec/OS2.pm		portable operations on OS2 file names

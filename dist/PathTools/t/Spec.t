@@ -38,7 +38,7 @@ if ( $@ ) {
    $INC{"VMS/Filespec.pm"} = 1 ;
 }
 
-foreach (qw(Unix Win32 VMS OS2 Mac Epoc Cygwin)) {
+foreach (qw(Unix Win32 VMS OS2 Mac Cygwin)) {
     require_ok("File::Spec::$_");
 }
 
@@ -706,17 +706,6 @@ my @tests = (
 [ "Mac->rel2abs('hd:','hd:d1:d2:')",           'hd:'              ], # path already absolute
 [ "Mac->rel2abs('hd:d3:file','hd:d1:d2:')",    'hd:d3:file'       ],
 [ "Mac->rel2abs('hd:d3:','hd:d1:file')",       'hd:d3:'           ],
-
-[ "Epoc->case_tolerant()",         '1'  ],
-
-[ "Epoc->canonpath('')",                                      ''          ],
-[ "Epoc->canonpath('///../../..//./././a//b/.././c/././')",   '/a/b/../c' ],
-[ "Epoc->canonpath('/./')",                                   '/'         ],
-[ "Epoc->canonpath('/a/./')",                                 '/a'        ],
-
-# XXX Todo, copied from Unix, but fail. Should they? 2003-07-07 Tels
-#[ "Epoc->canonpath('/a/.')",                                  '/a'        ],
-#[ "Epoc->canonpath('/.')",                                    '/'         ],
 
 [ "Cygwin->case_tolerant()",         '1'  ],
 [ "Cygwin->catfile('a','b','c')",         'a/b/c'  ],

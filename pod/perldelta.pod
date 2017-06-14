@@ -370,9 +370,11 @@ XXX List any platforms that this version of perl no longer compiles on.
 
 =over 4
 
-=item XXX-some-platform
+=item EPOC
 
-XXX
+Per discussion in https://rt.perl.org/Ticket/Display.html?id=130818, support
+for EPOC has been removed from the PathTools distribution (Cwd and
+File::Spec).
 
 =back
 

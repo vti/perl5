@@ -54,7 +54,7 @@ our(@ISA, @EXPORT, $VERSION, $Fileparse_fstype, $Fileparse_igncase);
 require Exporter;
 @ISA = qw(Exporter);
 @EXPORT = qw(fileparse fileparse_set_fstype basename dirname);
-$VERSION = "2.85";
+$VERSION = "2.86";
 
 fileparse_set_fstype($^O);
 
@@ -122,7 +122,7 @@ sub fileparse {
 
   my($dirpath, $basename);
 
-  if (grep { $type eq $_ } qw(MSDOS DOS MSWin32 Epoc)) {
+  if (grep { $type eq $_ } qw(MSDOS DOS MSWin32)) {
     ($dirpath,$basename) = ($fullname =~ /^((?:.*[:\\\/])?)(.*)/s);
     $dirpath .= '.\\' unless $dirpath =~ /[\\\/]\z/;
   }
@@ -354,8 +354,8 @@ operating system (ie. /foo/bar style on Unix, \foo\bar on Windows, etc...).
 With this function you can override that assumption.
 
 Valid $types are "MacOS", "VMS", "AmigaOS", "OS2", "RISCOS",
-"MSWin32", "DOS" (also "MSDOS" for backwards bug compatibility),
-"Epoc" and "Unix" (all case-insensitive).  If an unrecognized $type is
+"MSWin32", "DOS" (also "MSDOS" for backwards bug compatibility)
+and "Unix" (all case-insensitive).  If an unrecognized $type is
 given "Unix" will be assumed.
 
 If you've selected VMS syntax, and the file specification you pass to
@@ -370,7 +370,7 @@ call only.
 
 BEGIN {
 
-my @Ignore_Case = qw(MacOS VMS AmigaOS OS2 RISCOS MSWin32 MSDOS DOS Epoc);
+my @Ignore_Case = qw(MacOS VMS AmigaOS OS2 RISCOS MSWin32 MSDOS DOS);
 my @Types = (@Ignore_Case, qw(Unix));
 
 sub fileparse_set_fstype {
