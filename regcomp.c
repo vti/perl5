@@ -10484,7 +10484,7 @@ S_parse_lparen_question_flags(pTHX_ RExC_state_t *pRExC_state)
               fail_modifiers:
                 RExC_parse += SKIP_IF_CHAR(RExC_parse);
 		/* diag_listed_as: Sequence (?%s...) not recognized in regex; marked by <-- HERE in m/%s/ */
-                vFAIL2utf8f("Sequence (%" UTF8f "...) not recognized",
+                vFAIL2utf8f("Sequence (%" UTF8f "...) not recognized (x)",
                       UTF8fARG(UTF, RExC_parse-seqstart, seqstart));
                 NOT_REACHED; /*NOTREACHED*/
         }
@@ -14879,8 +14879,9 @@ S_handle_regex_sets(pTHX_ RExC_state_t *pRExC_state, SV** return_invlist,
                                     TRUE /* Force /x */ );
 
             switch (*RExC_parse) {
-                case '?':
-                    if (RExC_parse[1] == '[') nest_depth++, RExC_parse++;
+                case '(':
+                    if (RExC_parse[1] == '?' && RExC_parse[2] == '[')
+                        nest_depth++, RExC_parse+=2;
                     /* FALLTHROUGH */
                 default:
                     break;
@@ -14932,14 +14933,16 @@ S_handle_regex_sets(pTHX_ RExC_state_t *pRExC_state, SV** return_invlist,
                         RExC_parse--;
                     }
 
+                    DEBUG_PARSE("here");
+
                     SvREFCNT_dec(current);   /* In case it returned something */
                     break;
                 }
 
                 case ']':
-                    if (nest_depth--) break;
-                    RExC_parse++;
-                    if (*RExC_parse == ')') {
+                    if (RExC_parse[1] == ')') {
+                        RExC_parse++;
+                        if (nest_depth--) break;
                         node = reganode(pRExC_state, ANYOF, 0);
                         RExC_size += ANYOF_SKIP;
                         nextchar(pRExC_state);
@@ -14951,20 +14954,25 @@ S_handle_regex_sets(pTHX_ RExC_state_t *pRExC_state, SV** return_invlist,
 
                         return node;
                     }
-                    goto no_close;
+                    /* We output the messages even if warnings are off, because we'll fail
+                     * the very next thing, and these give a likely diagnosis for that */
+                    if (posix_warnings && av_tindex_skip_len_mg(posix_warnings) >= 0) {
+                        output_or_return_posix_warnings(pRExC_state, posix_warnings, NULL);
+                    }
+                    RExC_parse++;
+                    vFAIL("Unexpected ']' with no following ')' in (?[...");
             }
 
             RExC_parse += UTF ? UTF8SKIP(RExC_parse) : 1;
         }
 
-      no_close:
         /* We output the messages even if warnings are off, because we'll fail
          * the very next thing, and these give a likely diagnosis for that */
         if (posix_warnings && av_tindex_skip_len_mg(posix_warnings) >= 0) {
             output_or_return_posix_warnings(pRExC_state, posix_warnings, NULL);
         }
 
-        FAIL("Syntax error in (?[...])");
+        vFAIL("Syntax error in (?[...])");
     }
 
     /* Pass 2 only after this. */
@@ -15144,12 +15152,14 @@ redo_curchar:
                      * inversion list, and RExC_parse points to the trailing
                      * ']'; the next character should be the ')' */
                     RExC_parse++;
-                    assert(UCHARAT(RExC_parse) == ')');
+                    if (UCHARAT(RExC_parse) != ')')
+                        vFAIL("Expecting close paren for nested extended charclass");
 
                     /* Then the ')' matching the original '(' handled by this
                      * case: statement */
                     RExC_parse++;
-                    assert(UCHARAT(RExC_parse) == ')');
+                    if (UCHARAT(RExC_parse) != ')')
+                        vFAIL("Expecting close paren for wrapper for nested extended charclass");
 
                     RExC_parse++;
                     RExC_flags = save_flags;
