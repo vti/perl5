@@ -397,24 +397,25 @@ Perl_uvchr_to_utf8_flags(pTHX_ U8 *d, UV uv, UV flags)
     return uvchr_to_utf8_flags(d, uv, flags);
 }
 
-PERL_STATIC_INLINE bool
+PERL_STATIC_INLINE int
 S_is_utf8_cp_above_31_bits(const U8 * const s, const U8 * const e)
 {
-    /* Returns TRUE if the first code point represented by the Perl-extended-
+    /* Returns 1 if the first code point represented by the Perl-extended-
      * UTF-8-encoded string starting at 's', and looking no further than 'e -
-     * 1' doesn't fit into 31 bytes.  That is, that if it is >= 2**31.
+     * 1' definitely doesn't fit into 31 bytes.  That is, it evaluates to a
+     * code point at least 2**31.  If the sequence does evaluate to a code
+     * point that fits into 31 bits, it returns 0.
      *
      * The function handles the case where the input bytes do not include all
      * the ones necessary to represent a full character.  That is, they may be
-     * the intial bytes of the representation of a code point, but possibly
-     * the final ones necessary for the complete representation may be beyond
-     * 'e - 1'.
+     * the intial bytes of the representation of a code point, but possibly the
+     * final ones necessary for the complete representation may be beyond 'e -
+     * 1'.  If the sequence is incomplete, there still may be enough present to
+     * make a determination, which the function does.  If too few bytes are
+     * available, the function returns -1.
      *
      * The function assumes that the sequence is well-formed UTF-8 as far as it
-     * goes, and is for a UTF-8 variant code point.  If the sequence is
-     * incomplete, the function returns FALSE if there is any well-formed
-     * UTF-8 byte sequence that can complete it in such a way that a code point
-     * < 2**31 is produced; otherwise it returns TRUE.
+     * goes, and is for a UTF-8 variant code point.
      *
      * Getting this exactly right is slightly tricky, and has to be done in
      * several places in this file, so is centralized here.  It is based on the
@@ -466,13 +467,27 @@ S_is_utf8_cp_above_31_bits(const U8 * const s, const U8 * const e)
      * mean a 32-bit or larger code point (0xFF is an invariant).  For 0xFE, we
      * need at least 2 bytes, and maybe up through 8 bytes, to be sure that the
      * value is above 31 bits. */
-    if (*s != 0xFE || len == 1) {
-        return FALSE;
+    if (*s != 0xFE) {
+        return 0;
     }
 
-    /* Note that in UTF-EBCDIC, the two lowest possible continuation bytes are
-     * \x41 and \x42. */
-    return cBOOL(memGT(s + 1, prefix, cmp_len));
+    if (len == 1) {
+        return -1;
+    }
+
+        /* (Note that in UTF-EBCDIC, the two lowest possible continuation bytes
+         * are \x41 and \x42.)  If we have enough bytes available to determine
+         * the answer, or the bytes we do have differ from the UTF-8 prefix of
+         * the highest 30-bit code point, we can compare them to get a
+         * definitive answer */
+        if (cmp_len >= prefix_len || memNE(s + 1, prefix, cmp_len)) {
+            return cBOOL(memGT(s + 1, prefix, cmp_len));
+        }
+
+        /* Here, all the bytes we have are the same as the highest 30-bit code
+         * point, but we are missing enough bytes that we can't make the
+         * determination */
+        return -1;
 
 #endif
 
@@ -5143,7 +5158,7 @@ Perl_check_utf8_print(pTHX_ const U8* s, const STRLEN len)
                 if (   ckWARN_d(WARN_NON_UNICODE)
                     || (   ckWARN_d(WARN_DEPRECATED)
 #ifndef UV_IS_QUAD
-                        && UNLIKELY(is_utf8_cp_above_31_bits(s, e))
+                        && UNLIKELY(is_utf8_cp_above_31_bits(s, e) > 0)
 #else   /* Below is 64-bit words */
                         /* 2**63 and up meet these conditions provided we have
                          * a 64-bit word. */
