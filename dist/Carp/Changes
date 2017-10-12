@@ -1,3 +1,17 @@
+version 1.44
+
+  * Optimize format_arg when arguments contain many references
+
+     The format_arg call now avoids the expensive logic for
+     checking each argument if the argument will not have
+     CARP_TRACE such as a simple hashref or arrayref.
+     In testing this decreased the Carp backtrace time by about
+     35% in production code.
+
+  * Reduce overhead of checking for caller() being overridden
+
+  * Avoid a utf-8 downgrade when there are only printable ASCII characters
+
 version 1.43
 
   * fix problems introduced by the partial EBCDIC support from version
